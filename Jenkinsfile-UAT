@@ -1,0 +1,57 @@
+pipeline {
+    agent any
+    
+    environment {
+        DOCKER_REPO_HOST = "na.artifactory.swg-devops.com"
+        RTC_HOST = 'https://jazz.net/sandbox01-ccm/'
+        DOCKER_IMAGE = "${DOCKER_REPO_HOST}/hyc-baw-uab-devops-modernization-team-devops-docker-local/base-images/ubuntu22-git-rtc-tools"
+    }
+
+    stages {
+        stage('Preparation') {
+            steps {
+                script {
+                    echo "Current time: ${currentBuild.getTime()}"
+                    
+                    // Check and stop/remove existing container
+                    sh 'docker stop rtc-sync || true'
+                    sh 'docker rm rtc-sync || true'
+                    
+                    // Login to JFrog Artifactory
+                    withCredentials([usernamePassword(credentialsId: '4a5bba43-7f29-474a-b1b4-78752f767f82', passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+                        sh "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD} ${DOCKER_REPO_HOST}"
+                    }
+
+                    // Pull Docker image
+                    sh "docker pull ${DOCKER_IMAGE}"
+                }
+            }
+        }
+
+        stage('RTC Sync Code') {
+            steps {
+                script {
+                    // Create Docker container and execute steps inside the container
+                    withCredentials([usernamePassword(credentialsId: '9762a2d9-4069-414d-b077-210304c1664b', passwordVariable: 'RTC_PASSWORD', usernameVariable: 'RTC_USERNAME')]) {
+                        
+                        docker.image(DOCKER_IMAGE).inside("-i --name rtc-sync -v /var/run/docker.sock:/var/run/docker.sock") {
+                            // Login to RTC_HOST inside the container
+                            sh "scm login -r ${RTC_HOST} -u ${RTC_USERNAME} -p ${RTC_PASSWORD} -n local"
+
+                            // Execute steps inside the container
+                            sh "git clone https://github.com/IBM/gauge-web-app-steps.git /opt/git"
+                            sh "mkdir -p /opt/rtc-sync && cd /opt/rtc-sync && scm load -r local --all github-sync"
+                            sh "cp -rf /opt/git/* /opt/rtc-sync/"
+                            sh "scm share github-sync Standard * -r local || true"
+                            sh "scm checkin . --comment 'git to rtc sync' --complete"
+                            sh "scm deliver -s github-sync"
+
+                            // Logout RTC_HOST inside the container
+                            sh "scm logout -r ${RTC_HOST}"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
