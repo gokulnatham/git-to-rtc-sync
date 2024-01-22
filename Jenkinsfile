@@ -42,7 +42,7 @@ pipeline {
                         sh "docker exec rtc-sync scm login -r ${RTC_HOST} -u ${RTC_USERNAME} -P ${RTC_PASSWORD} -n local"
 
                         // Execute steps inside the container
-                        sh "docker exec rtc-sync git clone https://github.com/IBM/gauge-web-app-steps.git /opt/app"
+                        sh "docker exec rtc-sync git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
                         sh "docker exec rtc-sync mkdir -p /opt/rtc-sync"
                         sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm load -r local --all github-sync --allow'"
                         sh "docker exec rtc-sync sh -c 'cp -rf /opt/app/* /opt/rtc-sync/'"
