@@ -46,7 +46,7 @@ pipeline {
                         sh "docker exec rtc-sync mkdir -p /opt/rtc-sync"
                         sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm load -r local --all github-sync --allow'"
                         sh "docker exec rtc-sync sh -c 'cp -rf /opt/app/* /opt/rtc-sync/'"
-                        sh "docker exec rtc-sync scm share github-sync Standard /opt/rtc-sync/ -r local || true"
+                        sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm share github-sync Standard . -r local || true'"
                         sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm checkin . --comment \"git to rtc sync\" --complete'"
                         sh "docker exec rtc-sync scm deliver -s github-sync -r local"
 
