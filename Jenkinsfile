@@ -54,8 +54,8 @@ pipeline {
                         sh "docker exec rtc-sync scm logout -r ${RTC_HOST}"
 
                         // Stop and remove the container
-                        sh "docker stop rtc-sync"
-                        sh "docker rm rtc-sync"
+                        // sh "docker stop rtc-sync"
+                        // sh "docker rm rtc-sync"
                     }
                 }
             }
