@@ -35,7 +35,7 @@ pipeline {
 
                           // Execute steps inside the container
                             sh "git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
-                          //  sh "mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
+                            sh "mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
                             sh "scm load -r local --all github-sync --allow -d /opt/rtc-sync"
                             sh "cp -rf /opt/app/* /opt/rtc-sync/"
                             sh "scm share github-sync Standard * -r local || true"
