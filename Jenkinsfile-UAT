@@ -23,18 +23,28 @@ pipeline {
                     }
 
                     // Pull Docker image
-                    sh "docker pull ${DOCKER_IMAGE}"
+                    // sh "docker pull ${DOCKER_IMAGE}"
                 }
             }
         }
 
         stage('RTC Sync Code') {
+             agent {
+                        docker {
+                        image 'https://na.artifactory.swg-devops.com/hyc-baw-uab-devops-modernization-team-devops-docker-local/base-images/ubuntu22-git-rtc-tools'
+                        registryUrl 'https://na.artifactory.swg-devops.com'
+                        registryCredentialsId '4a5bba43-7f29-474a-b1b4-78752f767f82'
+                        alwaysPull true
+                        reuseNode true
+                                }
+                    }
+
             steps {
                 script {
                 withCredentials([usernamePassword(credentialsId: '9762a2d9-4069-414d-b077-210304c1664b', passwordVariable: 'RTC_PASSWORD', usernameVariable: 'RTC_USERNAME')]) {
                     // Use docker.image(dockerImage).inside to run commands in a Docker container
-                    docker.withRegistry("${DOCKER_REPO_HOST}", '4a5bba43-7f29-474a-b1b4-78752f767f82') {
-                        docker.image(DOCKER_IMAGE).inside("-i --name rtc-sync -v /var/run/docker.sock:/var/run/docker.sock") {
+                    // docker.withRegistry("${DOCKER_REPO_HOST}", '4a5bba43-7f29-474a-b1b4-78752f767f82') {
+                        // docker.image(DOCKER_IMAGE).inside("-i --name rtc-sync -v /var/run/docker.sock:/var/run/docker.sock") {
                             // Login to RTC_HOST inside the container
                             sh "scm login -r ${RTC_HOST} -u ${RTC_USERNAME} -P ${RTC_PASSWORD} -n local"
 
@@ -49,11 +59,9 @@ pipeline {
 
                             // Logout RTC_HOST inside the container
                             sh "scm logout -r ${RTC_HOST}"
+                            }
                         }
                     }
                 }
             }
         }
-    }
-}
-}
