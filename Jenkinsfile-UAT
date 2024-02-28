@@ -1,5 +1,7 @@
 pipeline {
-    agent any
+    options {
+        skipDefaultCheckout(true)
+    }
     
     environment {
         RTC_HOST = 'https://jazz.net/sandbox01-ccm/'
