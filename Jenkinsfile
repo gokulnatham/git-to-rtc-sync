@@ -40,6 +40,7 @@ pipeline {
                             sh "cp -rf /opt/app/* /opt/rtc-sync/"
                             sh "scm share github-sync Standard * -r local || true"
                             sh "scm checkin /opt/rtc-sync/ --comment 'git to rtc sync' --complete"
+                            sh "scm show status"
                             sh "scm deliver -v -s github-sync -r local"
                             sh "rm -rf /opt/app /opt/rtc-sync"
 
