@@ -22,7 +22,7 @@ pipeline {
                         registryCredentialsId '4a5bba43-7f29-474a-b1b4-78752f767f82'
                         alwaysPull true
                         reuseNode true
-                        args '-u 0:0'
+                        args '-u 0:0 -v /opt/app:/opt/app -v /opt/rtc-sync:/opt/rtc-sync'
                         }
                     }
 
