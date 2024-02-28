@@ -40,7 +40,7 @@ pipeline {
                             sh "cp -rf /opt/app/* /opt/rtc-sync/"
                             sh "scm share github-sync Standard * -r local || true"
                             sh "scm checkin /opt/rtc-sync/ --comment 'git to rtc sync' --complete"
-                            sh "scm deliver -s github-sync -r local"
+                            sh "scm deliver -v -s github-sync -r local"
 
                           // Logout RTC_HOST inside the container
                             sh "scm logout -r ${RTC_HOST}"
