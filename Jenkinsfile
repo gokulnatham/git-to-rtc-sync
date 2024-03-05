@@ -21,7 +21,7 @@ pipeline {
                     script {
                         sh "sudo git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
                         sh "sudo mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
-                        sh "sudo scm load -r local --all github-sync --allow"
+                        sh "sudo scm load -r local --all github-sync --allow -f"
                         sh "sudo cp -rf /opt/app/* /opt/rtc-sync/ && sudo rm -rf /opt/app/"
                         sh "sudo scm share github-sync Standard * -r local || true"
                         sh "sudo scm checkin . --comment \"git to rtc sync\" --complete"
