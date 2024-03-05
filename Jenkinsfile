@@ -19,14 +19,14 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: '9762a2d9-4069-414d-b077-210304c1664b', passwordVariable: 'RTC_PASSWORD', usernameVariable: 'RTC_USERNAME')]) {
                     // Use docker run to start a container
                     script {
-                        sh 'sudo ewmcli.py create Task -t /root/ewmcli/tasktemplate.json -r local -p "BAW Project" > sudo /root/ewmcli/itemnumber.txt'
+                        sh 'sudo ewmcli.py create Task -t /root/ewmcli/tasktemplate.json -r local -p "BAW Project" > ${WORKSPACE}/itemnumber.txt'
                         sh "sudo git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
                         sh "sudo mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
                         sh "sudo scm load -r local --all github-sync --allow -f"
                         sh "sudo cp -rf /opt/app/* /opt/rtc-sync/ && sudo rm -rf /opt/app/"
                         sh "sudo scm share github-sync Standard * -r local || true"
                         sh "sudo scm checkin . --comment \"git to rtc sync\" --complete"
-                        sh "sudo scm show status > sudo /root/ewmcli/changeset.txt"
+                        sh 'sudo scm show status > ${WORKSPACE}/changeset.txt'
                         sh "sudo scm deliver -s github-sync -r local"
 
                         // Logout RTC_HOST inside the container
