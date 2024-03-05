@@ -43,7 +43,7 @@ pipeline {
                         sh """docker exec rtc-sync sh -c 'echo "${RTC_PASSWORD}" | ewmcli.py login -r "${RTC_HOST}" -u "${RTC_USERNAME}" -n local -p "BAW Project"'"""
 
                         // Execute steps inside the container
-                        sh 'docker exec rtc-sync sh -c "ewmcli.py create Task -t /root/tasktemplate.json -r local -p \"BAW Project\" | tee /root/itemnumber.txt"'
+                        sh 'docker exec rtc-sync sh -c "ewmcli.py create Task -t /root/ewmcli/tasktemplate.json -r local -p '\''BAW Project'\'' | tee /opt/itemnumber.txt"'
                         sh "docker exec rtc-sync git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
                         sh "docker exec rtc-sync mkdir -p /opt/rtc-sync"
                         sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm load -r local --all github-sync --allow'"
