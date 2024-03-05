@@ -22,6 +22,7 @@ pipeline {
                     // Use docker run to start a container
                     script {
                         sh 'sudo scm login -u ${RTC_USERNAME} -P ${RTC_PASSWORD} -r ${RTC_HOST} -n local'
+                        sh 'sudo ewmcli.py login -r ${RTC_HOST} -u ${RTC_USERNAME} -n local -p "BAW Project" <<< "${RTC_PASSWORD}"'
                         sh 'sudo ewmcli.py create Task -t /root/ewmcli/tasktemplate.json -r local -p "BAW Project" > ${WORKSPACE}/itemnumber.txt'    
                         sh "sudo git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
                         sh "sudo mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
