@@ -19,16 +19,16 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: '9762a2d9-4069-414d-b077-210304c1664b', passwordVariable: 'RTC_PASSWORD', usernameVariable: 'RTC_USERNAME')]) {
                     // Use docker run to start a container
                     script {
-                        sh "git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
-                        sh "mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
-                        sh "scm load -r local --all github-sync --allow'"
-                        sh "cp -rf /opt/app/* /opt/rtc-sync/ && rm -rf /opt/app/*"
-                        sh "scm share github-sync Standard * -r local || true"
-                        sh "scm checkin . --comment \"git to rtc sync\" --complete"
-                        sh "scm deliver -s github-sync -r local"
+                        sh "sudo git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
+                        sh "sudo mkdir -p /opt/rtc-sync && cd /opt/rtc-sync"
+                        sh "sudo scm load -r local --all github-sync --allow'"
+                        sh "sudo cp -rf /opt/app/* /opt/rtc-sync/ && sudo rm -rf /opt/app/*"
+                        sh "sudo scm share github-sync Standard * -r local || true"
+                        sh "sudo scm checkin . --comment \"git to rtc sync\" --complete"
+                        sh "sudo scm deliver -s github-sync -r local"
 
                         // Logout RTC_HOST inside the container
-                        sh "scm logout -r ${RTC_HOST}"
+                        sh "sudo scm logout -r ${RTC_HOST}"
 
                     }
                 }
