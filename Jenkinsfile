@@ -16,6 +16,8 @@ pipeline {
 
         stage('RTC Sync Code') {
             steps {
+                cleanWs()
+
                 withCredentials([usernamePassword(credentialsId: '9762a2d9-4069-414d-b077-210304c1664b', passwordVariable: 'RTC_PASSWORD', usernameVariable: 'RTC_USERNAME')]) {
                     // Use docker run to start a container
                     script {
