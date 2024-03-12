@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOCKER_REPO_HOST = "na.artifactory.swg-devops.com"
         RTC_HOST = 'https://jazz.net/sandbox01-ccm/'
-        DOCKER_IMAGE = "${DOCKER_REPO_HOST}/hyc-baw-uab-devops-modernization-team-devops-docker-local/base-images/ubuntu22-git-rtc-tools"
+        DOCKER_IMAGE = "${DOCKER_REPO_HOST}/hyc-baw-uab-devops-modernization-team-devops-docker-local/base-images/ubuntu22-scm-git-workitem"
     }
 
     stages {
@@ -43,18 +43,11 @@ pipeline {
                         sh """docker exec rtc-sync sh -c 'echo "${RTC_PASSWORD}" | ewmcli.py login -r "${RTC_HOST}" -u "${RTC_USERNAME}" -n local -p "BAW Project"'"""
 
                         // Execute steps inside the container
-                        sh "docker exec rtc-sync sh -c 'ewmcli.py create Task -t /root/tasktemplate.json -r local -p \"BAW Project\" | tee /root/itemnumber.txt'"
-                        sh "docker exec rtc-sync git clone https://github.com/gokulnatham/git-to-rtc-sync.git /opt/app"
-                        sh "docker exec rtc-sync mkdir -p /opt/rtc-sync"
-                        sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm load -r local --all github-sync --allow'"
-                        sh "docker exec rtc-sync sh -c 'cp -rf /opt/app/* /opt/rtc-sync/'"
-                        sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm share github-sync Standard * -r local || true'"
-                        sh "docker exec rtc-sync sh -c 'cd /opt/rtc-sync && scm checkin . --comment \"git to rtc sync\" --complete'"
-                        sh "docker exec rtc-sync sh -c 'scm show status | tee /root/changeset.txt'"
-                        sh "docker exec rtc-sync scm deliver -s github-sync -r local"
+                        sh "docker exec rtc-sync sh -c '/root/workitemsync.sh'"
 
                         // Logout RTC_HOST inside the container
                         sh "docker exec rtc-sync scm logout -r ${RTC_HOST}"
+                        sh "docker exec rtc-sync ewmcli.py logout -r ${RTC_HOST}"
 
                         // Stop and remove the container
                         // sh "docker stop rtc-sync"
